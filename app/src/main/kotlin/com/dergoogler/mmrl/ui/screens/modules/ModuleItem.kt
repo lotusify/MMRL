@@ -1,6 +1,10 @@
 package com.dergoogler.mmrl.ui.screens.modules
 
-import androidx.annotation.DrawableRes
+import androidx.annotatimport com.dergoogler.mmrl.ui.component.lite.row.VerticalAlignment
+import com.dergoogler.mmrl.ui.component.text.TextWithIconDefaults
+import com.dergoogler.mmrl.ui.providable.LocalStoredModule
+import com.dergoogler.mmrl.utils.launchWebUI
+import com.dergoogler.mmrl.utils.toFormattedDateSafelyableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,12 +24,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import com.dergoogler.mmrl.BuildConfig
 import com.dergoogler.mmrl.R
 import com.dergoogler.mmrl.ext.fadingEdge
-import com.dergoogler.mmrl.ext.isPackageInstalled
 import com.dergoogler.mmrl.model.local.State
 import com.dergoogler.mmrl.model.local.versionDisplay
 import com.dergoogler.mmrl.ui.component.LabelItem
@@ -61,7 +61,6 @@ import com.dergoogler.mmrl.platform.content.LocalModule.Companion.hasWebUI
 import com.dergoogler.mmrl.platform.file.SuFile
 import com.dergoogler.mmrl.platform.file.SuFile.Companion.toFormattedFileSize
 import com.dergoogler.mmrl.platform.model.ModId.Companion.moduleDir
-import com.dergoogler.mmrl.ui.component.BottomSheet
 import com.dergoogler.mmrl.ui.component.LabelItemDefaults
 import com.dergoogler.mmrl.ui.component.LocalCover
 import com.dergoogler.mmrl.ui.component.card.component.Absolute
@@ -97,30 +96,13 @@ fun ModuleItem(
 
     val module = LocalStoredModule.current
 
-    var requiredAppBottomSheet by remember { mutableStateOf(false) }
-
     val canWenUIAccessed = remember(isProviderAlive, module) {
         isProviderAlive && module.hasWebUI && module.state != State.REMOVE
     }
 
-    val isWebUIXNotInstalled = remember(context) {
-        !context.isPackageInstalled(WebUIXPackageName)
-    }
-
     val clicker: (() -> Unit)? = remember(canWenUIAccessed) {
-        canWenUIAccessed nullable jump@{
-            if (isWebUIXNotInstalled) {
-                requiredAppBottomSheet = true
-                return@jump
-            }
-
+        canWenUIAccessed nullable {
             userPreferences.launchWebUI(context, module.id)
-        }
-    }
-
-    if (requiredAppBottomSheet) {
-        BottomSheetForWXP {
-            requiredAppBottomSheet = false
         }
     }
 
@@ -280,90 +262,6 @@ fun ModuleItem(
                 Spacer(modifier = Modifier.weight(1f))
                 trailingButton.invoke(this)
             }
-        }
-    }
-}
-
-@Composable
-fun BottomSheetForWXP(
-    onCancel: () -> Unit,
-) {
-    val browser = LocalUriHandler.current
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-
-    BottomSheet(
-        onDismissRequest = onCancel,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.sandbox),
-                contentDescription = null,
-                modifier = Modifier.size(98.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.external_app_required_title),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = stringResource(R.string.external_app_required_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        if (!sheetState.isVisible) {
-                            browser.openUri(
-                                if (BuildConfig.IS_GOOGLE_PLAY_BUILD) {
-                                    "https://play.google.com/store/apps/details?id=com.dergoogler.mmrl.wx"
-                                } else {
-                                    "https://github.com/MMRLApp/WebUI-X-Portable"
-                                }
-                            )
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.module_download))
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextButton(
-                onClick = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        onCancel()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(com.dergoogler.mmrl.ui.R.string.cancel))
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
