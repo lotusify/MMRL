@@ -1,5 +1,6 @@
 package com.dergoogler.mmrl.ui.screens.modules
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
