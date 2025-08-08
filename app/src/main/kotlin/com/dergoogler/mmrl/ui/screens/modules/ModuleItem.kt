@@ -1,10 +1,6 @@
 package com.dergoogler.mmrl.ui.screens.modules
 
-import androidx.annotatimport com.dergoogler.mmrl.ui.component.lite.row.VerticalAlignment
-import com.dergoogler.mmrl.ui.component.text.TextWithIconDefaults
-import com.dergoogler.mmrl.ui.providable.LocalStoredModule
-import com.dergoogler.mmrl.utils.launchWebUI
-import com.dergoogler.mmrl.utils.toFormattedDateSafelyableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
