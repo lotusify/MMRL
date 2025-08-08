@@ -56,63 +56,9 @@ fun createRootShell(
 internal val WebUIXPackageName = "com.dergoogler.mmrl.wx${if (BuildConfig.DEBUG) ".debug" else ""}"
 
 fun UserPreferences.launchWebUI(context: Context, modId: ModId) {
-    val config = modId.asModuleConfig
-
-    val launchWX: (ModId) -> Unit = { modId ->
-        val intent = Intent().apply {
-
-            component = ComponentName(
-                WebUIXPackageName,
-                "com.dergoogler.mmrl.wx.ui.activity.webui.WebUIActivity"
-            )
-            putModId(modId)
-            putPlatform(workingMode.toPlatform())
-        }
-
-        context.startActivity(intent)
+    val intent = Intent(context, com.dergoogler.mmrl.webui.activity.WXActivity::class.java).apply {
+        putModId(modId)
+        putPlatform(workingMode.toPlatform())
     }
-
-    val launchWL: (ModId) -> Unit = { modId ->
-        val intent = Intent().apply {
-            component = ComponentName(
-                WebUIXPackageName,
-                "com.dergoogler.mmrl.wx.ui.activity.webui.KsuWebUIActivity"
-            )
-            putModId(modId)
-            putPlatform(workingMode.toPlatform())
-        }
-
-        context.startActivity(intent)
-    }
-
-    if (webuiEngine == WebUIEngine.PREFER_MODULE) {
-        val configEngine = config.getWebuiEngine(context)
-
-        if (configEngine == null) {
-            launchWX(modId)
-            return
-        }
-
-        when (configEngine) {
-            "wx" -> launchWX(modId)
-            "ksu" -> launchWL(modId)
-            else -> Toast.makeText(context, "Unknown WebUI engine", Toast.LENGTH_SHORT).show()
-        }
-
-        return
-    }
-
-
-    if (webuiEngine == WebUIEngine.WX) {
-        launchWX(modId)
-        return
-
-    }
-
-    if (webuiEngine == WebUIEngine.KSU) {
-        launchWL(modId)
-        return
-    }
-
-    Toast.makeText(context, "Unknown WebUI engine", Toast.LENGTH_SHORT).show()
+    context.startActivity(intent)
 }
