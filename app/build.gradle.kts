@@ -3,10 +3,7 @@ import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alia    implementation(projects.ext)
-    implementation(projects.datastore)
-
-    implementation(libs.kotlin.stdlib).plugins.self.application)
+    alias(libs.plugins.self.application)
     alias(libs.plugins.self.compose)
     alias(libs.plugins.self.hilt)
     alias(libs.plugins.self.room)
@@ -205,8 +202,6 @@ dependencies {
     implementation(projects.ext)
     implementation(projects.compat)
     implementation(projects.datastore)
-
-    implementation(libs.webuix.portable)
 
     implementation(libs.kotlin.stdlib)
 
