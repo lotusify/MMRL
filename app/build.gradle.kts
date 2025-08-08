@@ -3,7 +3,10 @@ import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.self.application)
+    alia    implementation(projects.ext)
+    implementation(projects.datastore)
+
+    implementation(libs.kotlin.stdlib).plugins.self.application)
     alias(libs.plugins.self.compose)
     alias(libs.plugins.self.hilt)
     alias(libs.plugins.self.room)
@@ -197,6 +200,7 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     compileOnly(projects.hiddenApi)
     implementation(projects.platform)
+    implementation(projects.webui)
     implementation(projects.ui)
     implementation(projects.ext)
     implementation(projects.compat)

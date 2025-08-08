@@ -46,30 +46,6 @@ fun SettingsScreen() {
         title = R.string.page_settings
     ) {
         List {
-            context.isPackageInstalled(WebUIXPackageName).takeFalse {
-                ButtonItem(
-                    onClick = {
-                        browser.openUri(
-                            if (BuildConfig.IS_GOOGLE_PLAY_BUILD) {
-                                "https://play.google.com/store/apps/details?id=com.dergoogler.mmrl.wx"
-                            } else {
-                                "https://github.com/MMRLApp/WebUI-X-Portable"
-                            }
-                        )
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.sandbox)
-                    )
-                    Title(R.string.settings_try_wxp)
-                    Icon(
-                        slot = ListItemSlot.End,
-                        size = 12.dp,
-                        painter = painterResource(R.drawable.external_link)
-                    )
-                }
-            }
-
             NavButton(
                 route = SettingsScreen.Appearance.route,
                 icon = R.drawable.color_swatch,
