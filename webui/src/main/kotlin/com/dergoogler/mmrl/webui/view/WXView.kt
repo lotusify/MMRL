@@ -15,7 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.dergoogler.mmrl.ext.BuildCompat
+import dev.dergoogler.mmrl.compat.BuildCompat
 import com.dergoogler.mmrl.ext.exception.BrickException
 import com.dergoogler.mmrl.ext.findActivity
 import com.dergoogler.mmrl.ext.nullply
