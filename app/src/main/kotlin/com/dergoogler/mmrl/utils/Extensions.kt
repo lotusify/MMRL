@@ -96,5 +96,14 @@ fun UserPreferences.launchWebUI(context: Context, modId: ModId) {
                 Toast.makeText(context, "KSU Manager not found or doesn't support WebUI. Please install KernelSU, KernelSU-Next, or SukiSU Ultra.", Toast.LENGTH_LONG).show()
             }
         }
+        WebUIEngine.PREFER_MODULE -> {
+            // This should never happen as PREFER_MODULE is resolved above
+            // Fallback to WebUI X
+            val intent = Intent(context, com.dergoogler.mmrl.webui.activity.WXActivity::class.java).apply {
+                putModId(modId)
+                putPlatform(workingMode.toPlatform())
+            }
+            context.startActivity(intent)
+        }
     }
 }
