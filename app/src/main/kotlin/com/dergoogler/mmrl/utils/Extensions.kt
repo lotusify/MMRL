@@ -56,9 +56,45 @@ fun createRootShell(
 internal val WebUIXPackageName = "com.dergoogler.mmrl.wx${if (BuildConfig.DEBUG) ".debug" else ""}"
 
 fun UserPreferences.launchWebUI(context: Context, modId: ModId) {
-    val intent = Intent(context, com.dergoogler.mmrl.webui.activity.WXActivity::class.java).apply {
-        putModId(modId)
-        putPlatform(workingMode.toPlatform())
+    val moduleConfig = modId.asModuleConfig
+    
+    // Determine which WebUI engine to use
+    val engineToUse = when (webuiEngine) {
+        WebUIEngine.PREFER_MODULE -> {
+            // Check module's preferred engine, fallback to WebUI X (built-in)
+            when (moduleConfig.getWebuiEngine(context)) {
+                "wx" -> WebUIEngine.WX
+                "ksu" -> WebUIEngine.KSU
+                else -> WebUIEngine.WX // Default to WebUI X (built-in)
+            }
+        }
+        else -> webuiEngine
     }
-    context.startActivity(intent)
+    
+    when (engineToUse) {
+        WebUIEngine.WX -> {
+            // Launch built-in WebUI X (WXActivity)
+            val intent = Intent(context, com.dergoogler.mmrl.webui.activity.WXActivity::class.java).apply {
+                putModId(modId)
+                putPlatform(workingMode.toPlatform())
+            }
+            context.startActivity(intent)
+        }
+        WebUIEngine.KSU -> {
+            // Launch KSU manager WebUI (external app like KernelSU, KernelSU-Next, SukiSU Ultra)
+            val intent = Intent().apply {
+                // Try to launch KSU manager's WebUI
+                action = "android.intent.action.VIEW"
+                setData(android.net.Uri.parse("ksu://webui/${modId.id}"))
+                // Add fallback for different KSU managers
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            
+            try {
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(context, "KSU Manager not found or doesn't support WebUI. Please install KernelSU, KernelSU-Next, or SukiSU Ultra.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 }
